@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulazione Concorso Operatore Socio Sanitario - Modulo 10</title>
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #1a1a2e, #16213e, #0f3460);
+            margin: 0;
+            padding: 20px;
+            color: #f0f0f0;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.3);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 2.5em;
+            color: #ffd700;
+            text-shadow: 0 0 10px #ffd700, 0 0 20px #ffd700;
+            animation: glow 2s infinite alternate;
+        }
+
+        @keyframes glow {
+            from { text-shadow: 0 0 10px #ffd700, 0 0 20px #ffd700; }
+            to { text-shadow: 0 0 20px #ffd700, 0 0 30px #ffd700; }
+        }
+
+        #timer {
+            text-align: center;
+            margin: 20px 0;
+            font-size: 1.5em;
+            color: #00eaff;
+            text-shadow: 0 0 5px #00eaff;
+        }
+
+        .question-nav {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin: 20px 0;
+        }
+
+        .question-box {
+            width: 40px;
+            height: 40px;
+            margin: 8px;
+            background: linear-gradient(45deg, #333, #555);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+            color: #fff;
+            font-weight: bold;
+        }
+
+        .question-box:hover {
+            transform: scale(1.1);
+            box-shadow: 0 0 15px #ffd700;
+        }
+
+        .question-box.answered {
+            background: linear-gradient(45deg, #ffd700, #ffaa00);
+            box-shadow: 0 0 15px #ffd700;
+        }
+
+        .question {
+            margin-bottom: 20px;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .question.active {
+            display: block;
+        }
+
+        .question h3 {
+            margin: 0 0 15px 0;
+            color: #ffffff;
+            font-size: 1.6em;
+            text-shadow: 0 0 3px rgba(255, 255, 255, 0.5);
+            line-height: 1.4;
+        }
+
+        .option {
+            margin: 10px 0;
+            padding: 12px;
+            display: flex;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.25);
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            color: #ffffff;
+            font-size: 1.2em;
+            font-weight: 500;
+        }
+
+        .option:hover {
+            background: rgba(255, 255, 255, 0.35);
+            transform: translateX(5px);
+        }
+
+        .option.correct {
+            background: linear-gradient(90deg, #00eaff, #00b8d4);
+            color: #fff;
+            box-shadow: 0 0 15px #00eaff;
+        }
+
+        .option.wrong {
+            background: linear-gradient(90deg, #ff5252, #d81b60);
+            color: #fff;
+            box-shadow: 0 0 15px #ff5252;
+        }
+
+        .lamp {
+            display: none;
+            margin-left: 15px;
+            cursor: pointer;
+            font-size: 1.5em;
+            color: #ffd700;
+            text-shadow: 0 0 10px #ffd700;
+            transition: transform 0.3s ease;
+        }
+
+        .lamp:hover {
+            transform: scale(1.2);
+        }
+
+        .explanation {
+            margin-top: 15px;
+            font-style: italic;
+            color: #f0f0f0;
+            background: rgba(0, 0, 0, 0.5);
+            padding: 10px;
+            border-radius: 5px;
+            display: none;
+            animation: slideIn 0.5s ease;
+            font-size: 1.1em;
+            line-height: 1.5;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(-20px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        .navigation {
+            display: flex;
+            justify-content: space-between;
+            margin: 20px 0;
+        }
+
+        .nav-button {
+            padding: 12px 25px;
+            background: linear-gradient(45deg, #ffd700, #ffaa00);
+            color: #1a1a2e;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 1.2em;
+            box-shadow: 0 0 10px #ffd700;
+            transition: all 0.3s ease;
+            font-weight: bold;
+        }
+
+        .nav-button:disabled {
+            background: #666;
+            color: #ccc;
+            box-shadow: none;
+            cursor: not-allowed;
+        }
+
+        .nav-button:hover:not(:disabled) {
+            transform: scale(1.05);
+            box-shadow: 0 0 20px #ffd700;
+        }
+
+        button#submit {
+            display: block;
+            width: 250px;
+            margin: 20px auto;
+            padding: 15px;
+            background: linear-gradient(45deg, #00eaff, #00b8d4);
+            color: #1a1a2e;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 1.3em;
+            box-shadow: 0 0 15px #00eaff;
+            transition: all 0.3s ease;
+            font-weight: bold;
+        }
+
+        button#submit:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 25px #00eaff;
+        }
+
+        #result {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 1.8em;
+            color: #ffd700;
+            text-shadow: 0 0 10px #ffd700;
+        }
+    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <h1>Simulazione Concorso Operatore Socio Sanitario - Modulo 10</h1>
+        <div class="question-nav" id="questionNav"></div>
+        <div id="timer">Tempo rimanente: <span id="time">30:00</span></div>
+        <div id="quiz"></div>
+        <div class="navigation">
+            <button class="nav-button" id="prev" disabled>⬅ Indietro</button>
+            <button class="nav-button" id="next">Avanti ➡</button>
+        </div>
+        <button id="submit">Invia Risposte</button>
+        <div id="result"></div>
+    </div>
+
+    <script>
+        // Array di domande (271-300) con opzioni mescolate casualmente
+        const questions = [
+            {
+                question: "Cos’è l’insufficienza renale?",
+                options: ["Un’infiammazione del fegato", "Una ridotta funzione dei reni", "Un accumulo di liquido nei polmoni"],
+                correct: "Una ridotta funzione dei reni",
+                explanation: "L’insufficienza renale è una condizione in cui i reni non filtrano adeguatamente i rifiuti dal sangue, causando accumulo di tossine e squilibrio idro-elettrolitico. Non è un’infiammazione del fegato né un edema polmonare. Gli OSS devono monitorare la diuresi, il peso e segni come edema, segnalandoli all’équipe medica."
+            },
+            {
+                question: "Quale è un segno tipico dell’insufficienza renale?",
+                options: ["Ittero", "Oliguria", "Tachipnea"],
+                correct: "Oliguria",
+                explanation: "L’oliguria (produzione di urina <400 mL/giorno) è un segno tipico dell’insufficienza renale, dovuta alla ridotta capacità di filtrazione renale. L’ittero e la tachipnea non sono segni primari. Gli OSS devono misurare la diuresi, osservare edema o stanchezza e segnalare anomalie."
+            },
+            {
+                question: "Cos’è la pielonefrite?",
+                options: ["Un’infiammazione del pancreas", "Un’infezione renale", "Un blocco intestinale"],
+                correct: "Un’infezione renale",
+                explanation: "La pielonefrite è un’infezione dei reni, spesso causata da batteri che risalgono dalle vie urinarie, con sintomi come febbre, dolore lombare e disuria. Non è un’infiammazione del pancreas né un blocco intestinale. Gli OSS devono monitorare la temperatura, garantire idratazione e segnalare sintomi urinari."
+            },
+            {
+                question: "Cos’è un calcolo renale?",
+                options: ["Un deposito solido nel rene o nelle vie urinarie", "Un’infiammazione del fegato", "Un accumulo di liquido nei polmoni"],
+                correct: "Un deposito solido nel rene o nelle vie urinarie",
+                explanation: "Un calcolo renale è un deposito solido di minerali (es. ossalato di calcio) nel rene o nelle vie urinarie, che può causare colica renale e dolore lombare. Non è un’infiammazione del fegato né un edema polmonare. Gli OSS devono monitorare il dolore, garantire idratazione e segnalare ematuria."
+            },
+            {
+                question: "Quale è un segno tipico del calcolo renale?",
+                options: ["Dolore lombare irradiato", "Ittero", "Tachipnea"],
+                correct: "Dolore lombare irradiato",
+                explanation: "Il dolore lombare irradiato all’inguine (colica renale) è un segno tipico del calcolo renale, spesso accompagnato da ematuria. L’ittero e la tachipnea non sono correlati. Gli OSS devono monitorare il dolore, somministrare analgesici se prescritti e segnalare sintomi gravi."
+            },
+            {
+                question: "Cos’è la cistite?",
+                options: ["Un’infiammazione della vescica", "Un’infiammazione del colon", "Un accumulo di liquido nei polmoni"],
+                correct: "Un’infiammazione della vescica",
+                explanation: "La cistite è un’infiammazione della vescica, solitamente causata da infezioni batteriche, con sintomi come bruciore alla minzione e urgenza urinaria. Non è un’infiammazione del colon né un edema polmonare. Gli OSS devono monitorare i sintomi urinari, garantire idratazione e segnalare febbre."
+            },
+            {
+                question: "Quale è un segno tipico della cistite?",
+                options: ["Bruciore alla minzione", "Dolore addominale sinistro", "Ittero"],
+                correct: "Bruciore alla minzione",
+                explanation: "Il bruciore alla minzione (disuria) è un segno tipico della cistite, spesso accompagnato da urgenza e frequenza urinaria. Il dolore addominale sinistro e l’ittero non sono correlati. Gli OSS devono osservare i sintomi, garantire l’igiene e segnalare infezioni persistenti."
+            },
+            {
+                question: "Cos’è l’insufficienza cardiaca?",
+                options: ["Una ridotta capacità del cuore di pompare sangue", "Un’infiammazione del fegato", "Un blocco renale"],
+                correct: "Una ridotta capacità del cuore di pompare sangue",
+                explanation: "L’insufficienza cardiaca è una condizione in cui il cuore non pompa sangue adeguatamente, causando edema, dispnea e stanchezza. Non è un’infiammazione del fegato né un blocco renale. Gli OSS devono monitorare edema, dispnea e peso corporeo, segnalando peggioramenti."
+            },
+            {
+                question: "Quale è un segno tipico dell’insufficienza cardiaca?",
+                options: ["Edema periferico", "Poliuria", "Ittero"],
+                correct: "Edema periferico",
+                explanation: "L’edema periferico (es. gonfiore alle caviglie) è un segno tipico dell’insufficienza cardiaca, dovuto al ristagno di liquidi. La poliuria e l’ittero non sono correlati. Gli OSS devono misurare il peso, monitorare l’edema e segnalare dispnea o aumento di peso."
+            },
+            {
+                question: "Cos’è l’infarto miocardico?",
+                options: ["Un’infiammazione del pancreas", "Un’occlusione delle arterie coronarie", "Un accumulo di liquido nei polmoni"],
+                correct: "Un’occlusione delle arterie coronarie",
+                explanation: "L’infarto miocardico è la necrosi del muscolo cardiaco dovuta a un’occlusione delle arterie coronarie, con sintomi come dolore toracico e dispnea. Non è un’infiammazione del pancreas né un edema polmonare. Gli OSS devono segnalare immediatamente sintomi come dolore toracico e garantire ossigeno."
+            },
+            {
+                question: "Quale è un segno tipico dell’infarto miocardico?",
+                options: ["Dolore toracico oppressivo", "Poliuria", "Ittero"],
+                correct: "Dolore toracico oppressivo",
+                explanation: "Il dolore toracico oppressivo, spesso irradiato al braccio sinistro, è un segno tipico dell’infarto miocardico. La poliuria e l’ittero non sono correlati. Gli OSS devono riconoscere il dolore, monitorare i parametri vitali e segnalare immediatamente per un intervento urgente."
+            },
+            {
+                question: "Cos’è l’angina pectoris?",
+                options: ["Un’infiammazione del fegato", "Un dolore toracico da ischemia miocardica", "Un blocco renale"],
+                correct: "Un dolore toracico da ischemia miocardica",
+                explanation: "L’angina pectoris è un dolore toracico causato da un’insufficiente apporto di ossigeno al miocardio, spesso scatenato da sforzo o stress. Non è un’infiammazione del fegato né un blocco renale. Gli OSS devono monitorare il dolore, somministrare nitroglicerina se prescritta e segnalare episodi frequenti."
+            },
+            {
+                question: "Cos’è l’aritmia cardiaca?",
+                options: ["Un ritmo cardiaco anormale", "Un’infiammazione della vescica", "Un accumulo di liquido nei polmoni"],
+                correct: "Un ritmo cardiaco anormale",
+                explanation: "L’aritmia cardiaca è un’alterazione del ritmo cardiaco, che può essere troppo veloce (tachicardia), lento (bradicardia) o irregolare (es. fibrillazione atriale). Non è un’infiammazione della vescica né un edema polmonare. Gli OSS devono misurare il polso, monitorare i sintomi e segnalare irregolarità."
+            },
+            {
+                question: "Cos’è la fibrillazione atriale?",
+                options: ["Un’infiammazione del fegato", "Un’aritmia con contrazioni atriali rapide e irregolari", "Un blocco renale"],
+                correct: "Un’aritmia con contrazioni atriali rapide e irregolari",
+                explanation: "La fibrillazione atriale è un’aritmia caratterizzata da contrazioni rapide e irregolari degli atri, che può causare palpitazioni e aumentare il rischio di ictus. Non è un’infiammazione del fegato né un blocco renale. Gli OSS devono monitorare il polso e segnalare sintomi come vertigini o dispnea."
+            },
+            {
+                question: "Cos’è l’ipertensione arteriosa?",
+                options: ["Una pressione arteriosa inferiore a 90/60 mmHg", "Una pressione arteriosa superiore a 140/90 mmHg", "Un ritmo cardiaco irregolare"],
+                correct: "Una pressione arteriosa superiore a 140/90 mmHg",
+                explanation: "L’ipertensione arteriosa è una pressione arteriosa persistentemente superiore a 140/90 mmHg, che aumenta il rischio di infarto e ictus. Non è una pressione inferiore a 90/60 mmHg (ipotensione) né un’aritmia. Gli OSS devono misurare la pressione regolarmente e segnalare valori elevati."
+            },
+            {
+                question: "Cos’è l’ipotensione arteriosa?",
+                options: ["Una pressione arteriosa superiore a 140/90 mmHg", "Una pressione arteriosa inferiore a 90/60 mmHg", "Un ritmo cardiaco irregolare"],
+                correct: "Una pressione arteriosa inferiore a 90/60 mmHg",
+                explanation: "L’ipotensione arteriosa è una pressione arteriosa inferiore a 90/60 mmHg, che può causare vertigini o svenimenti. Non è una pressione superiore a 140/90 mmHg (ipertensione) né un’aritmia. Gli OSS devono monitorare la pressione e segnalare sintomi come debolezza."
+            },
+            {
+                question: "Cos’è l’aterosclerosi?",
+                options: ["Un’infiammazione della vescica", "Un accumulo di placche nelle arterie", "Un accumulo di liquido nei polmoni"],
+                correct: "Un accumulo di placche nelle arterie",
+                explanation: "L’aterosclerosi è l’accumulo di placche di colesterolo e altre sostanze nelle arterie, che può causare infarto o ictus. Non è un’infiammazione della vescica né un edema polmonare. Gli OSS devono monitorare i pazienti a rischio, promuovendo una dieta sana e segnalando sintomi cardiaci."
+            },
+            {
+                question: "Cos’è un aneurisma?",
+                options: ["Un’infiammazione del fegato", "Una dilatazione anomala di un’arteria", "Un blocco renale"],
+                correct: "Una dilatazione anomala di un’arteria",
+                explanation: "Un aneurisma è una dilatazione anomala di un’arteria, che può rompersi causando emorragie gravi. Non è un’infiammazione del fegato né un blocco renale. Gli OSS devono monitorare sintomi come dolore pulsante e segnalare immediatamente segni di rottura."
+            },
+            {
+                question: "Cos’è la trombosi venosa profonda?",
+                options: ["Un’infiammazione della vescica", "Un coagulo di sangue in una vena profonda", "Un accumulo di liquido nei polmoni"],
+                correct: "Un coagulo di sangue in una vena profonda",
+                explanation: "La trombosi venosa profonda (TVP) è la formazione di un coagulo di sangue in una vena profonda, spesso nelle gambe, con sintomi come gonfiore e dolore. Non è un’infiammazione della vescica né un edema polmonare. Gli OSS devono monitorare il gonfiore, promuovere la mobilità e segnalare segni di TVP."
+            },
+            {
+                question: "Quale è un segno tipico della trombosi venosa profonda?",
+                options: ["Ittero", "Gonfiore e dolore alla gamba", "Poliuria"],
+                correct: "Gonfiore e dolore alla gamba",
+                explanation: "Il gonfiore e il dolore alla gamba, spesso unilaterali, sono segni tipici della trombosi venosa profonda. L’ittero e la poliuria non sono correlati. Gli OSS devono misurare la circonferenza della gamba, evitare massaggi e segnalare sintomi sospetti."
+            },
+            {
+                question: "Cos’è l’embolia polmonare?",
+                options: ["Un’infiammazione del fegato", "Un’ostruzione di un’arteria polmonare", "Un blocco renale"],
+                correct: "Un’ostruzione di un’arteria polmonare",
+                explanation: "L’embolia polmonare è l’ostruzione di un’arteria polmonare, spesso da un coagulo proveniente da una TVP, con sintomi come dispnea acuta e dolore toracico. Non è un’infiammazione del fegato né un blocco renale. Gli OSS devono segnalare immediatamente sintomi respiratori e garantire ossigeno."
+            },
+            {
+                question: "Quale è un segno tipico dell’embolia polmonare?",
+                options: ["Dispnea acuta", "Poliuria", "Ittero"],
+                correct: "Dispnea acuta",
+                explanation: "La dispnea acuta, spesso accompagnata da tachicardia e dolore toracico, è un segno tipico dell’embolia polmonare. La poliuria e l’ittero non sono correlati. Gli OSS devono monitorare la respirazione, somministrare ossigeno se prescritto e segnalare sintomi urgenti."
+            },
+            {
+                question: "Cos’è lo shock cardiogeno?",
+                options: ["Un’infiammazione della vescica", "Una grave insufficienza cardiaca con bassa perfusione", "Un accumulo di liquido nei polmoni"],
+                correct: "Una grave insufficienza cardiaca con bassa perfusione",
+                explanation: "Lo shock cardiogeno è una grave insufficienza cardiaca in cui il cuore non pompa abbastanza sangue, causando bassa perfusione tissutale e ipotensione. Non è un’infiammazione della vescica né un edema polmonare. Gli OSS devono segnalare immediatamente sintomi come ipotensione e cianosi."
+            },
+            {
+                question: "Cos’è lo shock ipovolemico?",
+                options: ["Un’infiammazione del fegato", "Una perdita acuta di volume ematico", "Un blocco renale"],
+                correct: "Una perdita acuta di volume ematico",
+                explanation: "Lo shock ipovolemico è causato da una perdita acuta di volume ematico (es. emorragie, disidratazione), con sintomi come tachicardia e ipotensione. Non è un’infiammazione del fegato né un blocco renale. Gli OSS devono monitorare i parametri vitali, garantire accesso venoso e segnalare segni di shock."
+            },
+            {
+                question: "Cos’è la pericardite?",
+                options: ["Un’infiammazione del pericardio", "Un’infiammazione della vescica", "Un accumulo di liquido nei polmoni"],
+                correct: "Un’infiammazione del pericardio",
+                explanation: "La pericardite è un’infiammazione del pericardio, la membrana che circonda il cuore, spesso causata da infezioni o malattie autoimmuni, con sintomi come dolore toracico. Non è un’infiammazione della vescica né un edema polmonare. Gli OSS devono monitorare il dolore e segnalare febbre o dispnea."
+            },
+            {
+                question: "Cos’è l’endocardite?",
+                options: ["Un’infiammazione del fegato", "Un’infezione dell’endocardio", "Un blocco renale"],
+                correct: "Un’infezione dell’endocardio",
+                explanation: "L’endocardite è un’infezione dell’endocardio, spesso delle valvole cardiache, causata da batteri, con sintomi come febbre e soffi cardiaci. Non è un’infiammazione del fegato né un blocco renale. Gli OSS devono monitorare la temperatura, osservare segni di emboli e segnalare anomalie."
+            },
+            {
+                question: "Cos’è la miocardite?",
+                options: ["Un’infiammazione del miocardio", "Un’infiammazione della vescica", "Un accumulo di liquido nei polmoni"],
+                correct: "Un’infiammazione del miocardio",
+                explanation: "La miocardite è un’infiammazione del miocardio, spesso causata da virus, con sintomi come dolore toracico e aritmie. Non è un’infiammazione della vescica né un edema polmonare. Gli OSS devono monitorare i parametri vitali, segnalare aritmie e garantire il riposo del paziente."
+            },
+            {
+                question: "Cos’è l’insufficienza mitralica?",
+                options: ["Un’infiammazione del fegato", "Un malfunzionamento della valvola mitrale", "Un blocco renale"],
+                correct: "Un malfunzionamento della valvola mitrale",
+                explanation: "L’insufficienza mitralica è un malfunzionamento della valvola mitrale, che causa un reflusso di sangue dall’atrio al ventricolo sinistro, con sintomi come dispnea. Non è un’infiammazione del fegato né un blocco renale. Gli OSS devono monitorare la dispnea e segnalare sintomi cardiaci."
+            },
+            {
+                question: "Cos’è l’insufficienza aortica?",
+                options: ["Un malfunzionamento della valvola aortica", "Un’infiammazione della vescica", "Un accumulo di liquido nei polmoni"],
+                correct: "Un malfunzionamento della valvola aortica",
+                explanation: "L’insufficienza aortica è un malfunzionamento della valvola aortica, che causa un reflusso di sangue dall’aorta al ventricolo sinistro, con sintomi come dispnea. Non è un’infiammazione della vescica né un edema polmonare. Gli OSS devono monitorare i parametri vitali e segnalare sintomi."
+            },
+            {
+                question: "Cos’è la stenosi mitralica?",
+                options: ["Un’infiammazione del fegato", "Un restringimento della valvola mitrale", "Un blocco renale"],
+                correct: "Un restringimento della valvola mitrale",
+                explanation: "La stenosi mitralica è un restringimento della valvola mitrale, che ostacola il flusso di sangue dall’atrio al ventricolo sinistro, con sintomi come dispnea. Non è un’infiammazione del fegato né un blocco renale. Gli OSS devono monitorare la dispnea e segnalare segni di scompenso cardiaco."
+            },
+            {
+                question: "Cos’è la stenosi aortica?",
+                options: ["Un restringimento della valvola aortica", "Un’infiammazione della vescica", "Un accumulo di liquido nei polmoni"],
+                correct: "Un restringimento della valvola aortica",
+                explanation: "La stenosi aortica è un restringimento della valvola aortica, che ostacola il flusso di sangue dal ventricolo sinistro all’aorta, con sintomi come dispnea e sincope. Non è un’infiammazione della vescica né un edema polmonare. Gli OSS devono monitorare i sintomi e segnalare anomalie."
+            }
+        ];
+
+        let currentQuestion = 0;
+
+        // Carica i quadratini di navigazione
+        function loadQuestionNav() {
+            const navDiv = document.getElementById("questionNav");
+            questions.forEach((_, index) => {
+                const box = document.createElement("div");
+                box.classList.add("question-box");
+                box.textContent = index + 1;
+                box.addEventListener("click", () => {
+                    showQuestion(index);
+                });
+                navDiv.appendChild(box);
+            });
+        }
+
+        // Carica il quiz
+        function loadQuiz() {
+            const quizDiv = document.getElementById("quiz");
+            questions.forEach((q, index) => {
+                const questionDiv = document.createElement("div");
+                questionDiv.classList.add("question");
+                questionDiv.id = `question-${index}`;
+                questionDiv.innerHTML = `
+                    <h3>${index + 1}. ${q.question}</h3>
+                    ${q.options.map((opt, i) => `
+                        <div class="option" data-value="${opt}">
+                            <input type="radio" name="q${index}" value="${opt}" id="q${index}_${i}">
+                            <label for="q${index}_${i}">${opt}</label>
+                            <span class="lamp" id="lamp-${index}-${i}">💡</span>
+                        </div>
+                    `).join("")}
+                    <div class="explanation" id="exp-${index}">${q.explanation}</div>
+                `;
+                quizDiv.appendChild(questionDiv);
+
+                // Aggiungi evento per accendere il quadratino
+                const radios = questionDiv.querySelectorAll(`input[name="q${index}"]`);
+                radios.forEach(radio => {
+                    radio.addEventListener("change", () => {
+                        document.querySelectorAll(".question-box")[index].classList.add("answered");
+                    });
+                });
+            });
+            showQuestion(0); // Mostra la prima domanda
+        }
+
+        // Mostra la domanda corrente
+        function showQuestion(index) {
+            document.querySelectorAll(".question").forEach(q => q.classList.remove("active"));
+            document.getElementById(`question-${index}`).classList.add("active");
+            currentQuestion = index;
+
+            // Gestione stato pulsanti
+            document.getElementById("prev").disabled = currentQuestion === 0;
+            document.getElementById("next").disabled = currentQuestion === questions.length - 1;
+        }
+
+        // Timer (30 minuti)
+        let timeLeft = 30 * 60;
+        function startTimer() {
+            const timer = setInterval(() => {
+                timeLeft--;
+                const minutes = Math.floor(timeLeft / 60);
+                const seconds = timeLeft % 60;
+                document.getElementById("time").textContent = 
+                    `${minutes}:${seconds < 10 ? "0" + seconds : seconds}`;
+                
+                if (timeLeft <= 0) {
+                    clearInterval(timer);
+                    checkAnswers();
+                }
+            }, 1000);
+        }
+
+        // Controllo risposte e feedback visivo
+        function checkAnswers() {
+            let score = 0;
+            questions.forEach((q, index) => {
+                const selected = document.querySelector(`input[name="q${index}"]:checked`);
+                const options = document.querySelectorAll(`#question-${index} .option`);
+
+                options.forEach(option => {
+                    const value = option.getAttribute("data-value");
+                    if (value === q.correct) {
+                        option.classList.add("correct");
+                        const lamp = option.querySelector(".lamp");
+                        lamp.style.display = "inline";
+                        lamp.addEventListener("click", () => {
+                            const explanation = document.getElementById(`exp-${index}`);
+                            explanation.style.display = "block";
+                        });
+                    }
+                });
+
+                if (selected) {
+                    if (selected.value === q.correct) {
+                        score++;
+                    } else {
+                        selected.parentElement.classList.add("wrong");
+                    }
+                }
+            });
+
+            const resultDiv = document.getElementById("result");
+            resultDiv.textContent = `Punteggio: ${score} / ${questions.length}`;
+            document.getElementById("submit").disabled = true;
+            document.getElementById("prev").disabled = true;
+            document.getElementById("next").disabled = true;
+
+            // Disabilita i radio button dopo l'invio
+            document.querySelectorAll("input[type=radio]").forEach(radio => {
+                radio.disabled = true;
+            });
+        }
+
+        // Inizializzazione
+        window.onload = () => {
+            loadQuestionNav();
+            loadQuiz();
+            startTimer();
+
+            document.getElementById("prev").addEventListener("click", () => {
+                if (currentQuestion > 0) showQuestion(currentQuestion - 1);
+            });
+
+            document.getElementById("next").addEventListener("click", () => {
+                if (currentQuestion < questions.length - 1) showQuestion(currentQuestion + 1);
+            });
+
+            document.getElementById("submit").addEventListener("click", checkAnswers);
+        };
+    </script>
+</body>
+</html>
